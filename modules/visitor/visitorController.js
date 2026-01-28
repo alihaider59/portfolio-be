@@ -3,8 +3,9 @@ const VisitorService = require("./vistorService");
 
 class VisitorController {
   trackVisitor = catchAsync(async (req, res) => {
-    const ip =
-      req.ip || req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+    const ip = (req.headers["x-forwarded-for"] || "")
+      .split(",")[0]
+      .trim() || req.ip || req.connection.remoteAddress;
 
     const totalVisitors = await VisitorService.trackVisitor(ip);
 

@@ -3,8 +3,10 @@ const ContactService = require("./contactService");
 
 class ContactController {
   saveContact = catchAsync(async (req, res) => {
-    const ip =
-      req.ip || req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+    // Extract real client IP from headers (for proxies/CDN)
+    const ip = (req.headers["x-forwarded-for"] || "")
+      .split(",")[0]
+      .trim() || req.ip || req.connection.remoteAddress;
     const { name, email, message } = req.body;
 
     const contact = await ContactService.saveContact({
