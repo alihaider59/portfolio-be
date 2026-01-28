@@ -44,6 +44,13 @@ const limiter = rateLimit({
 app.use("/api", limiter);
 app.use("/api", routes);
 
+app.use("/api/welcome", (req, res) => {
+  res.status(200).json({
+    status: "success",
+    message: "Welcome to the to Server",
+  });
+});
+
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).json({
