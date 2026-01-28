@@ -5,7 +5,6 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const express = require("express");
 const rateLimit = require("express-rate-limit");
-const mongoSanitize = require("./utils/mongoSanitize");
 
 const connectDB = require("./config/dbConfig");
 const routes = require("./modules/routes");
@@ -28,9 +27,6 @@ app.use(helmet());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
-app.use(express.json());
-app.use(mongoSanitize);
-app.use(hpp());
 
 app.use(
   cors({
@@ -40,6 +36,17 @@ app.use(
     credentials: true,
   }),
 );
+
+app.use((req, res, next) => {
+  const ip = (req.headers["x-forwarded-for"] || "")
+    .split(",")[0]
+    .trim() || req.ip || req.connection.remoteAddress;
+  req.clientIp = ip;
+  next();
+});
+
+app.use(express.json());
+app.use(hpp());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
