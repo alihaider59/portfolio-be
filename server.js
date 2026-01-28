@@ -15,12 +15,14 @@ const app = express();
 
 app.set("trust proxy", 1);
 
-app.use((req, res, next) => {
-  if (req.ip === "::1") {
-    req.ip = "127.0.0.1";
-  }
-  next();
-});
+if (process.env.NODE_ENV === "development") {
+  app.use((req, res, next) => {
+    if (req.ip === "::1") {
+      req.ip = "127.0.0.1";
+    }
+    next();
+  });
+}
 
 app.use(helmet());
 if (process.env.NODE_ENV === "development") {
