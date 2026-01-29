@@ -1,9 +1,9 @@
 const catchAsync = require("../../utils/catchAsync");
 const ContactService = require("./contactService");
+const EmailService = require("../email/emailService");
 
 class ContactController {
   saveContact = catchAsync(async (req, res) => {
-    // Extract real client IP from headers (for proxies/CDN)
     const ip = (req.headers["x-forwarded-for"] || "")
       .split(",")[0]
       .trim() || req.ip || req.connection.remoteAddress;
@@ -15,6 +15,13 @@ class ContactController {
       message,
       ipAddress: ip,
     });
+
+    try {
+      await EmailService.sendContactThankYou(contact.email, contact.name);
+      await EmailService.sendContactAlertToOwner({ name: contact.name, email: contact.email, message: contact.message });
+    } catch (err) {
+      console.error("Contact emails failed:", err.message);
+    }
 
     res.status(201).json({
       status: "success",
