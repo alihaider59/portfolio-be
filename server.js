@@ -4,6 +4,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const express = require("express");
+const path = require("path");
 const rateLimit = require("express-rate-limit");
 
 const connectDB = require("./config/dbConfig");
@@ -47,6 +48,9 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 app.use(hpp());
+
+// Static files for uploaded testimonial images (e.g. /uploads/testimonials/xxx.jpg)
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
