@@ -17,6 +17,23 @@ class TestimonialService {
     const totalPages = Math.ceil(total / limit) || 1;
     return { testimonials, total, totalPages };
   }
+
+  async getById(id) {
+    return Testimonial.findById(id);
+  }
+
+  async updateById(id, data) {
+    const updated = await Testimonial.findByIdAndUpdate(id, data, {
+      new: true,
+      runValidators: true,
+    });
+    return updated;
+  }
+
+  async deleteById(id) {
+    const deleted = await Testimonial.findByIdAndDelete(id);
+    return deleted;
+  }
 }
 
 module.exports = new TestimonialService();

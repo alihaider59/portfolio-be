@@ -60,6 +60,27 @@ class ContactController {
       data: contact,
     });
   });
+
+  deleteContacts = catchAsync(async (req, res) => {
+    const body = req.body || {};
+    const queryIds = req.query.ids ? String(req.query.ids).split(",").map((s) => s.trim()).filter(Boolean) : [];
+    const ids = Array.isArray(body.ids) ? body.ids : body.id != null ? [body.id] : queryIds;
+
+    if (ids.length === 0) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Provide one or more contact ids in body: { ids: [\"id1\", \"id2\"] } or { id: \"id1\" }, or query: ?ids=id1,id2",
+      });
+    }
+
+    const { deletedCount } = await ContactService.deleteByIds(ids);
+
+    res.status(200).json({
+      status: "success",
+      message: deletedCount === 1 ? "Contact deleted." : `${deletedCount} contacts deleted.`,
+      deletedCount,
+    });
+  });
 }
 
 module.exports = new ContactController();

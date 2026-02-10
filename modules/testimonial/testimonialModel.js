@@ -7,6 +7,7 @@ const testimonialSchema = new mongoose.Schema(
     designation: { type: String, required: true },
     company: { type: String, required: true },
     image: { type: String, default: null },
+    email: { type: String, required: true },
   },
   { timestamps: true },
 );

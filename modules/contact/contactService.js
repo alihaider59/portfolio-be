@@ -16,6 +16,12 @@ class ContactService {
   async getContactById(id) {
     return await Contact.findById(id);
   }
+
+  async deleteByIds(ids) {
+    if (!Array.isArray(ids) || ids.length === 0) return { deletedCount: 0 };
+    const result = await Contact.deleteMany({ _id: { $in: ids } });
+    return { deletedCount: result.deletedCount };
+  }
 }
 
 module.exports = new ContactService();
