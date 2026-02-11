@@ -6,6 +6,7 @@ const morgan = require("morgan");
 const express = require("express");
 const path = require("path");
 const rateLimit = require("express-rate-limit");
+const cookieParser = require("cookie-parser");
 
 const connectDB = require("./config/dbConfig");
 const routes = require("./modules/routes");
@@ -33,7 +34,7 @@ app.use(
   cors({
     origin: process.env.FRONTEND_URL,
     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "x-admin-secret", "x-edit-token"],
     credentials: true,
   }),
 );
@@ -47,6 +48,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
+app.use(cookieParser());
 app.use(hpp());
 
 // Static files for uploaded testimonial images (e.g. /uploads/testimonials/xxx.jpg)

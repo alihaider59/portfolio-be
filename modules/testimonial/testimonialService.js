@@ -1,8 +1,18 @@
 const Testimonial = require("./testimonialModel");
+const EmailService = require("../email/emailService"); // new import
+const crypto = require("crypto");
 
 class TestimonialService {
   async create(data) {
-    const testimonial = await Testimonial.create(data);
+    const token = crypto.randomBytes(32).toString("hex");
+    const testimonial = await Testimonial.create({ ...data, token });
+
+    const editLink = `${process.env.FRONTEND_URL || "http://localhost:3000"}/testimonial/edit/${token}`;
+    
+    if (data.email) {
+      await EmailService.sendTestimonialEditLink(data.email, data.name, editLink);
+    }
+
     return testimonial;
   }
 
@@ -20,6 +30,10 @@ class TestimonialService {
 
   async getById(id) {
     return Testimonial.findById(id);
+  }
+
+  async getByToken(token) {
+    return Testimonial.findOne({ token });
   }
 
   async updateById(id, data) {
