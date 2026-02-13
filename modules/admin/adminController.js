@@ -53,20 +53,7 @@ function toResponseItem(doc) {
   return obj;
 }
 
-async function getTestimonialById(req, res) {
-  const { id } = req.params;
-  const testimonial = await TestimonialService.getById(id);
-  if (!testimonial) {
-    return res.status(404).json({ status: "fail", message: "Testimonial not found." });
-  }
-  res.status(200).json({
-    status: "success",
-    data: toResponseItem(testimonial),
-  });
-}
-
 module.exports = {
-  login: catchAsync(login),
-  getTestimonialById: catchAsync(getTestimonialById),
+  login: catchAsync(login)
 };
 

@@ -16,6 +16,4 @@ router.get("/me", requireAdmin, (req, res) => {
 router.get("/dashboard", requireAdmin, DashboardController.getOverview);
 router.get("/dashboard/stats", requireAdmin, DashboardController.getStats);
 
-router.get("/testimonials/:id", requireAdmin, AdminController.getTestimonialById);
-
 module.exports = router;
