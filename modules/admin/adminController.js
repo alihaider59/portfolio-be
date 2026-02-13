@@ -1,5 +1,6 @@
 const catchAsync = require("../../utils/catchAsync");
 const jwt = require("jsonwebtoken");
+const TestimonialService = require("../testimonial/testimonialService");
 
 async function login(req, res) {
   const { email, password } = req.body;
@@ -42,6 +43,30 @@ async function login(req, res) {
   });
 }
 
+function toResponseItem(doc) {
+  const obj = typeof doc.toObject === "function" ? doc.toObject() : { ...doc };
+  delete obj.email;
+  delete obj.token;
+  if (obj.image && !obj.image.startsWith("http")) {
+    obj.image = "/uploads/" + obj.image;
+  }
+  return obj;
+}
+
+async function getTestimonialById(req, res) {
+  const { id } = req.params;
+  const testimonial = await TestimonialService.getById(id);
+  if (!testimonial) {
+    return res.status(404).json({ status: "fail", message: "Testimonial not found." });
+  }
+  res.status(200).json({
+    status: "success",
+    data: toResponseItem(testimonial),
+  });
+}
+
 module.exports = {
   login: catchAsync(login),
+  getTestimonialById: catchAsync(getTestimonialById),
 };
+

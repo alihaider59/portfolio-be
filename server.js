@@ -30,9 +30,22 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  process.env.ADMIN_URL,
+];
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true); 
+      } else {
+        callback(new Error("Not allowed by CORS")); 
+      }
+    },
     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "x-admin-secret", "x-edit-token"],
     credentials: true,
@@ -51,7 +64,6 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(hpp());
 
-// Static files for uploaded testimonial images (e.g. /uploads/testimonials/xxx.jpg)
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 const limiter = rateLimit({
