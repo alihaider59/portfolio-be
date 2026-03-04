@@ -1,14 +1,10 @@
 const Stripe = require("stripe");
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-/**
- * Create Checkout Session
- */
 exports.createCheckoutSession = async (req, res, next) => {
   try {
     const { amount } = req.body;
 
-    // Always validate server-side
     if (!amount || amount < 1) {
       return res.status(400).json({
         status: "fail",
@@ -27,7 +23,7 @@ exports.createCheckoutSession = async (req, res, next) => {
             product_data: {
               name: "Test Payment",
             },
-            unit_amount: amount * 100, // Convert to cents
+            unit_amount: amount * 100, 
           },
           quantity: 1,
         },
@@ -51,20 +47,12 @@ exports.createCheckoutSession = async (req, res, next) => {
   }
 };
 
-/**
- * Verify Payment by PaymentIntent ID
- */
 exports.verifyPayment = async (req, res, next) => {
   try {
     let { paymentIntentId } = req.params;
 
     console.log("verifyPayment invoked with id:", paymentIntentId);
-
-    // Stripe returns a checkout session ID (cs_...) when the client redirects
-    // using the default success_url.  Many frontends grab the `session_id` query
-    // parameter, so we need to handle both session IDs and payment intent IDs.
     if (paymentIntentId && paymentIntentId.startsWith("cs_")) {
-      // convert the session id to a payment intent id
       const session = await stripe.checkout.sessions.retrieve(paymentIntentId);
       paymentIntentId = session.payment_intent;
     }
@@ -85,15 +73,10 @@ exports.verifyPayment = async (req, res, next) => {
       currency: paymentIntent.currency,
     });
   } catch (err) {
-    // Stripe errors often have a `type` property we could inspect but the global
-    // error handler will log the message for us.  Re‑throw for the error middleware.
     next(err);
   }
 };
 
-/**
- * Webhook Handler
- */
 exports.handleWebhook = (req, res) => {
   const signature = req.headers["stripe-signature"];
   let event;
