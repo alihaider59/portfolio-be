@@ -33,6 +33,7 @@ if (process.env.NODE_ENV === "development") {
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   process.env.ADMIN_URL,
+  process.env.CLIENT_URL,
 ];
 
 app.use(
