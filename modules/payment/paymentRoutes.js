@@ -13,7 +13,10 @@ router.post(
 );
 
 /**
- * Route to verify payment by PaymentIntent ID
+ * Route to verify payment.  The front end often supplies the checkout session
+ * ID (`cs_*`) via the `session_id` query parameter; in that case the
+ * controller will internally look up the session and extract the associated
+ * PaymentIntent.  You can also pass the PaymentIntent ID directly.
  */
 router.get(
   "/verify/:paymentIntentId",
