@@ -83,7 +83,7 @@ const limiter = rateLimit({
   },
 });
 
-app.use("/api", limiter);
+// app.use("/api", limiter);
 app.use("/api", routes);
 
 app.use("/api/welcome", (req, res) => {
